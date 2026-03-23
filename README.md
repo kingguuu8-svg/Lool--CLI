@@ -179,6 +179,13 @@ start-desktop.bat
 
 - [Chinese guide](docs/zh-CN.md)
 
+## Community
+
+- [Contributing guide](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Support guide](SUPPORT.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
+
 ## License
 
 [MIT](LICENSE)
