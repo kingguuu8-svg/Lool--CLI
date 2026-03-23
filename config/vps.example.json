@@ -1,0 +1,7 @@
+{
+  "host": "your-vps-ip-or-domain",
+  "user": "root",
+  "keyPath": "C:\\path\\to\\your\\vps-key.pem",
+  "remotePort": 43000,
+  "publicUrl": "http://your-vps-ip-or-domain"
+}

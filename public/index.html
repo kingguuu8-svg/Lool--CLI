@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PocketCLI</title>
+    <link rel="stylesheet" href="/vendor/xterm/css/xterm.css" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="panel">
+          <h1>PocketCLI</h1>
+          <p class="hint">Self-hosted browser access for local agent CLIs. Claude Code works today.</p>
+          <form id="create-session-form" class="stack">
+            <select id="session-mode">
+              <option value="local">Local session</option>
+              <option value="ssh">SSH session</option>
+            </select>
+            <input id="session-name" type="text" placeholder="session name" />
+            <input id="session-cwd" type="text" placeholder="working dir / initial dir (optional)" />
+            <input id="startup-command" type="text" placeholder="startup command (optional, e.g. claude)" />
+
+            <div id="ssh-fields" class="stack hidden">
+              <input id="ssh-host" type="text" placeholder="ssh host" />
+              <div class="row">
+                <input id="ssh-port" type="number" placeholder="port" value="22" />
+                <input id="ssh-username" type="text" placeholder="username" />
+              </div>
+              <select id="ssh-auth-type">
+                <option value="password">Password</option>
+                <option value="privateKey">Private key path</option>
+              </select>
+              <input id="ssh-password" type="password" placeholder="password" />
+              <input id="ssh-private-key-path" class="hidden" type="text" placeholder="private key path on this PC" />
+              <input id="ssh-passphrase" class="hidden" type="password" placeholder="key passphrase (optional)" />
+            </div>
+            <button type="submit">Create Session</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="row">
+            <h2>Sessions</h2>
+            <button id="refresh-sessions" type="button">Refresh</button>
+          </div>
+          <div id="session-list" class="session-list"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Quick Actions</h2>
+          <div class="stack">
+            <button id="run-claude" type="button">Run claude</button>
+            <button id="send-clear" type="button">Clear screen</button>
+            <button id="kill-session" type="button" class="danger">Kill session</button>
+          </div>
+          <p class="hint">
+            Tip: click into the terminal and use it like a normal shell.
+          </p>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="toolbar">
+          <div id="active-session-title">No session selected</div>
+          <div id="status-text" class="hint">Server ready.</div>
+        </div>
+        <div id="terminal"></div>
+      </main>
+    </div>
+
+    <script src="/vendor/xterm/lib/xterm.js"></script>
+    <script src="/vendor/xterm-addon-fit/lib/addon-fit.js"></script>
+    <script src="/assets/app.js"></script>
+  </body>
+</html>

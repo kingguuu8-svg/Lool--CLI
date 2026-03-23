@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" fill="none">
+  <rect width="1200" height="640" fill="#09111f"/>
+  <rect x="44" y="44" width="1112" height="552" rx="28" fill="#0f1b33" stroke="#20345c"/>
+  <rect x="88" y="108" width="440" height="420" rx="22" fill="#0b1326" stroke="#28416f"/>
+  <rect x="564" y="108" width="548" height="420" rx="22" fill="#0b1326" stroke="#28416f"/>
+  <text x="88" y="78" fill="#9fb5d9" font-family="Consolas, monospace" font-size="24">PocketCLI</text>
+  <text x="88" y="158" fill="#f5f7fb" font-family="Segoe UI, Arial" font-size="44" font-weight="700">Self-hosted access for local agent CLIs</text>
+  <text x="88" y="205" fill="#98a9c5" font-family="Segoe UI, Arial" font-size="24">Run on your own machine. Reach it from desktop, browser, and Android.</text>
+  <text x="88" y="267" fill="#7fe1c3" font-family="Consolas, monospace" font-size="22">> claude</text>
+  <text x="88" y="304" fill="#d5def0" font-family="Consolas, monospace" font-size="22">Analyzing repository...</text>
+  <text x="88" y="341" fill="#d5def0" font-family="Consolas, monospace" font-size="22">Launching remote session...</text>
+  <text x="88" y="378" fill="#d5def0" font-family="Consolas, monospace" font-size="22">Ready.</text>
+  <rect x="620" y="152" width="436" height="48" rx="12" fill="#132241"/>
+  <text x="648" y="184" fill="#f5f7fb" font-family="Segoe UI, Arial" font-size="24">Desktop launcher</text>
+  <rect x="620" y="224" width="188" height="60" rx="14" fill="#1d4ed8"/>
+  <rect x="832" y="224" width="188" height="60" rx="14" fill="#0f766e"/>
+  <rect x="620" y="308" width="400" height="164" rx="18" fill="#09111f" stroke="#29436e"/>
+  <text x="652" y="265" fill="#ffffff" font-family="Segoe UI, Arial" font-size="22">Start Local</text>
+  <text x="864" y="265" fill="#ffffff" font-family="Segoe UI, Arial" font-size="22">Start VPS</text>
+  <text x="648" y="344" fill="#9fb5d9" font-family="Consolas, monospace" font-size="20">URL=http://your-vps-host</text>
+  <text x="648" y="382" fill="#9fb5d9" font-family="Consolas, monospace" font-size="20">ACCESS_TOKEN=...</text>
+  <text x="648" y="430" fill="#d5def0" font-family="Segoe UI, Arial" font-size="22">Windows launcher + browser terminal + Android shell</text>
+  <text x="88" y="566" fill="#6f86ad" font-family="Segoe UI, Arial" font-size="20">Claude Code supported today. More local agent CLIs planned.</text>
+</svg>

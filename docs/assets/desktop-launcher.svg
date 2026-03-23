@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" fill="none">
+  <rect width="1200" height="760" rx="28" fill="#0b1326"/>
+  <rect x="22" y="22" width="1156" height="716" rx="24" fill="#0f1b33"/>
+  <rect x="46" y="70" width="320" height="620" rx="22" fill="#09111f" stroke="#29436e"/>
+  <text x="74" y="120" fill="#f5f7fb" font-family="Segoe UI, Arial" font-size="36" font-weight="700">PocketCLI</text>
+  <text x="74" y="154" fill="#91a5c9" font-family="Segoe UI, Arial" font-size="22">Desktop launcher</text>
+  <rect x="74" y="196" width="264" height="58" rx="14" fill="#1d4ed8"/>
+  <rect x="74" y="270" width="264" height="58" rx="14" fill="#0f766e"/>
+  <rect x="74" y="344" width="264" height="58" rx="14" fill="#f59e0b"/>
+  <rect x="74" y="418" width="264" height="58" rx="14" fill="#b91c1c"/>
+  <text x="158" y="233" fill="#ffffff" font-family="Segoe UI, Arial" font-size="24">Start Local</text>
+  <text x="169" y="307" fill="#ffffff" font-family="Segoe UI, Arial" font-size="24">Start LAN</text>
+  <text x="172" y="381" fill="#ffffff" font-family="Segoe UI, Arial" font-size="24">Start VPS</text>
+  <text x="166" y="455" fill="#ffffff" font-family="Segoe UI, Arial" font-size="24">Stop Server</text>
+  <rect x="398" y="70" width="756" height="620" rx="22" fill="#09111f" stroke="#29436e"/>
+  <rect x="430" y="112" width="692" height="62" rx="14" fill="#132241"/>
+  <text x="462" y="151" fill="#f5f7fb" font-family="Segoe UI, Arial" font-size="26">Embedded terminal UI</text>
+  <rect x="430" y="206" width="692" height="452" rx="18" fill="#0b1326" stroke="#243d68"/>
+  <text x="466" y="260" fill="#7fe1c3" font-family="Consolas, monospace" font-size="24">&gt; claude</text>
+  <text x="466" y="304" fill="#d5def0" font-family="Consolas, monospace" font-size="22">Planning implementation...</text>
+  <text x="466" y="344" fill="#d5def0" font-family="Consolas, monospace" font-size="22">Editing files...</text>
+  <text x="466" y="384" fill="#d5def0" font-family="Consolas, monospace" font-size="22">Build complete.</text>
+</svg>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PocketCLI Desktop</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="panel">
+          <h1>PocketCLI</h1>
+          <p class="hint">Desktop launcher for local, LAN, tunnel, and VPS access.</p>
+          <div class="stack">
+            <button data-mode="local">Start Local</button>
+            <button data-mode="lan">Start LAN</button>
+            <button data-mode="vps">Start VPS</button>
+            <button data-mode="stop" class="danger">Stop Server</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Status</h2>
+          <div id="status" class="status-line">Idle.</div>
+          <div id="current-url" class="mono small"></div>
+          <div id="current-token" class="mono small"></div>
+          <div class="stack top-gap">
+            <button id="open-local">Open Local UI</button>
+            <button id="open-vps">Open VPS URL</button>
+          </div>
+        </div>
+
+        <div class="panel grow">
+          <div class="row">
+            <h2>Launcher Log</h2>
+            <button id="clear-log">Clear</button>
+          </div>
+          <pre id="launcher-log" class="log"></pre>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="toolbar">
+          <div>
+            <div class="toolbar-title">Embedded terminal UI</div>
+            <div class="hint">Start a mode on the left, then load the active terminal view below.</div>
+          </div>
+          <div class="row">
+            <button id="load-local">Load Local</button>
+            <button id="load-vps">Load VPS</button>
+            <button id="reload-web">Reload</button>
+          </div>
+        </div>
+        <iframe id="app-frame" title="PocketCLI"></iframe>
+      </main>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+  </html>
