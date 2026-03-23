@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement for local, Android, desktop, or VPS workflows
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      placeholder: I want a faster way to switch between multiple project sessions from Android.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      placeholder: Add saved presets for common endpoints and startup commands.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: I tried using the desktop launcher only, but I still need mobile access.

@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a broken workflow, regression, or setup problem
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the problem and the expected behavior.
+      placeholder: PocketCLI failed to open the Android terminal after saving a VPS endpoint.
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Run mode
+      options:
+        - Local
+        - LAN
+        - Temporary public tunnel
+        - VPS
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Windows desktop
+        - Android
+        - Browser UI
+        - Multiple
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run start-vps-app.bat
+        2. Open the Android app
+        3. Save the server config
+        4. Open the terminal view
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Remove secrets, tokens, and private keys before pasting.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      placeholder: Windows version, Android version, startup script, and any custom config
