@@ -6,7 +6,9 @@ Current demo motion asset:
 
 - `docs/assets/pocketcli-demo.gif`
 
-For the public launch, keep at least these four visuals updated:
+Placeholder illustrations were removed from the README. Only keep real captures here.
+
+For the public launch, the target asset set is:
 
 1. Android terminal view
 2. Android settings view
@@ -22,4 +24,4 @@ Recommended refresh workflow:
 4. Capture Android views from a device or emulator when available
 5. Export final PNG or SVG assets into `docs/assets`
 
-If a true Android screenshot is not available yet, do not fake device chrome in the README. Use the current launch illustrations until you replace them with fresh captures.
+If a true Android screenshot is not available yet, leave it out of the README instead of using a mock illustration.
