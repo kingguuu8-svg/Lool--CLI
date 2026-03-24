@@ -45,6 +45,7 @@ if exist "%ANDROID_DIR%\app\build\outputs\apk\debug\app-debug.apk" (
   copy /y "%ANDROID_DIR%\app\build\outputs\apk\debug\app-debug.apk" "%DIST_DIR%\app-debug.apk" >nul
 )
 
+del /q "%DIST_DIR%\PocketCLI-Mobile-v*-debug.apk" 2>nul
 for %%F in ("%ANDROID_DIR%\app\build\outputs\apk\debug\PocketCLI-Mobile-v*-debug.apk") do (
   if exist "%%~fF" copy /y "%%~fF" "%DIST_DIR%\%%~nxF" >nul
 )
@@ -53,6 +54,7 @@ if exist "%ANDROID_DIR%\app\build\outputs\apk\release\app-release.apk" (
   copy /y "%ANDROID_DIR%\app\build\outputs\apk\release\app-release.apk" "%DIST_DIR%\app-release.apk" >nul
 )
 
+del /q "%DIST_DIR%\PocketCLI-Mobile-v*-release.apk" 2>nul
 for %%F in ("%ANDROID_DIR%\app\build\outputs\apk\release\PocketCLI-Mobile-v*-release.apk") do (
   if exist "%%~fF" copy /y "%%~fF" "%DIST_DIR%\%%~nxF" >nul
 )
