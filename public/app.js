@@ -49,6 +49,7 @@ fitAddon.fit();
 let currentSessionId = null;
 let currentSocket = null;
 let sessionCache = [];
+let connectionAttempt = 0;
 
 function setStatus(message) {
   statusText.textContent = message;
@@ -199,12 +200,18 @@ async function connectSession(sessionId) {
   updateTitle();
   term.reset();
   setStatus("Connecting...");
+  connectionAttempt += 1;
+  const currentAttempt = connectionAttempt;
 
   const protocol = location.protocol === "https:" ? "wss" : "ws";
   const socket = new WebSocket(`${protocol}://${location.host}/ws/sessions/${sessionId}`);
   currentSocket = socket;
 
   socket.onopen = () => {
+    if (currentSocket !== socket || currentAttempt !== connectionAttempt) {
+      socket.close();
+      return;
+    }
     fitAddon.fit();
     socket.send(
       JSON.stringify({
@@ -218,10 +225,15 @@ async function connectSession(sessionId) {
   };
 
   socket.onmessage = (event) => {
+    if (currentSocket !== socket || currentAttempt !== connectionAttempt) {
+      return;
+    }
+
     const message = JSON.parse(event.data);
-    if (message.type === "history") {
-      for (const chunk of message.chunks) {
-        term.write(chunk);
+    if (message.type === "snapshot") {
+      term.reset();
+      if (message.data) {
+        term.write(message.data);
       }
       return;
     }
@@ -239,12 +251,23 @@ async function connectSession(sessionId) {
 
     if (message.type === "error") {
       setStatus(message.message);
+      return;
+    }
+
+    if (message.type === "viewer_replaced") {
+      setStatus(message.message || "This session was opened somewhere else.");
+      socket.close();
     }
   };
 
-  socket.onclose = () => {
+  socket.onclose = (event) => {
     if (currentSocket === socket) {
-      setStatus("Disconnected.");
+      if (event.code === 4001) {
+        setStatus("Session moved to another device or tab.");
+      } else {
+        setStatus("Disconnected.");
+      }
+      currentSocket = null;
     }
   };
 }

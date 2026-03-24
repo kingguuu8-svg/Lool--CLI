@@ -1,13 +1,17 @@
 const path = require("path");
 const { randomUUID } = require("crypto");
 const WebSocket = require("ws");
+const { Terminal: HeadlessTerminal } = require("@xterm/headless");
+const { SerializeAddon } = require("@xterm/addon-serialize");
 const { createLocalTransport } = require("./transports/local-transport");
 const {
   createSshHelpers,
   createSshTransport,
 } = require("./transports/ssh-transport");
 
-const MAX_CHUNKS = 400;
+const DEFAULT_COLS = 120;
+const DEFAULT_ROWS = 32;
+const SNAPSHOT_SCROLLBACK = 10000;
 function sanitizeLocalCwd(defaultCwd, inputCwd) {
   if (!inputCwd || typeof inputCwd !== "string") {
     return defaultCwd;
@@ -65,6 +69,15 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
   const sshHelpers = createSshHelpers(projectRoot);
 
   function createSessionBase({ name, cwd, mode, target, shell, startupCommand }) {
+    const snapshotTerminal = new HeadlessTerminal({
+      cols: DEFAULT_COLS,
+      rows: DEFAULT_ROWS,
+      scrollback: SNAPSHOT_SCROLLBACK,
+      allowProposedApi: true,
+    });
+    const serializeAddon = new SerializeAddon();
+    snapshotTerminal.loadAddon(serializeAddon);
+
     return {
       id: randomUUID(),
       name: name?.trim() || `session-${sessions.size + 1}`,
@@ -76,9 +89,12 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
       createdAt: new Date().toISOString(),
       exitedAt: null,
       exitCode: null,
-      history: [],
       sockets: new Set(),
       transport: null,
+      snapshotTerminal,
+      serializeAddon,
+      cols: DEFAULT_COLS,
+      rows: DEFAULT_ROWS,
     };
   }
 
@@ -98,12 +114,6 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
     };
   }
 
-  function ensureHistoryLimit(session) {
-    while (session.history.length > MAX_CHUNKS) {
-      session.history.shift();
-    }
-  }
-
   function broadcast(session, message) {
     const payload = JSON.stringify(message);
     for (const socket of session.sockets) {
@@ -114,9 +124,24 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
   }
 
   function appendOutput(session, data) {
-    session.history.push(data);
-    ensureHistoryLimit(session);
+    session.snapshotTerminal.write(data);
     broadcast(session, { type: "output", data });
+  }
+
+  function getSessionSnapshot(session) {
+    return session.serializeAddon.serialize({
+      scrollback: SNAPSHOT_SCROLLBACK,
+      excludeModes: true,
+    });
+  }
+
+  function applySessionResize(session, cols, rows) {
+    const nextCols = Math.max(20, Number(cols || DEFAULT_COLS));
+    const nextRows = Math.max(8, Number(rows || DEFAULT_ROWS));
+    session.cols = nextCols;
+    session.rows = nextRows;
+    session.transport.resize(nextCols, nextRows);
+    session.snapshotTerminal.resize(nextCols, nextRows);
   }
 
   function finalizeExit(session, exitCode) {
@@ -260,14 +285,33 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
       return;
     }
 
-    session.sockets.add(socket);
+    for (const existingSocket of [...session.sockets]) {
+      if (existingSocket === socket) {
+        continue;
+      }
+
+      if (existingSocket.readyState === WebSocket.OPEN) {
+        existingSocket.send(
+          JSON.stringify({
+            type: "viewer_replaced",
+            message: "This session was opened on another device or tab.",
+          })
+        );
+      }
+
+      existingSocket.close(4001, "Viewer replaced");
+      session.sockets.delete(existingSocket);
+    }
+
+    const snapshot = getSessionSnapshot(session);
     socket.send(
       JSON.stringify({
-        type: "history",
-        chunks: session.history,
+        type: "snapshot",
+        data: snapshot,
         session: toSessionSummary(session),
       })
     );
+    session.sockets.add(socket);
 
     socket.on("message", (raw) => {
       try {
@@ -276,10 +320,7 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
           session.transport.write(String(message.data || ""));
         }
         if (message.type === "resize" && !session.exitedAt) {
-          session.transport.resize(
-            Number(message.cols || 120),
-            Number(message.rows || 32)
-          );
+          applySessionResize(session, message.cols, message.rows);
         }
       } catch (error) {
         socket.send(
