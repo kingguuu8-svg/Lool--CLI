@@ -6,6 +6,15 @@ function safeDecodeURIComponent(value) {
   }
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function parseCookies(header = "") {
   return header
     .split(";")
@@ -56,8 +65,9 @@ function createAuth({ accessToken, authCookieName, appName }) {
   }
 
   function renderLoginPage(errorMessage = "") {
+    const safeAppName = escapeHtml(appName);
     const safeMessage = errorMessage
-      ? `<p style="color:#fca5a5;margin:0 0 12px 0;">${errorMessage}</p>`
+      ? `<p style="color:#fca5a5;margin:0 0 12px 0;">${escapeHtml(errorMessage)}</p>`
       : "";
 
     return `<!DOCTYPE html>
@@ -65,7 +75,7 @@ function createAuth({ accessToken, authCookieName, appName }) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${appName} Login</title>
+    <title>${safeAppName} Login</title>
     <style>
       body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #111827; color: #e5e7eb; font-family: Consolas, "Courier New", monospace; }
       .card { width: min(420px, calc(100vw - 32px)); background: #0f172a; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; }
@@ -78,7 +88,7 @@ function createAuth({ accessToken, authCookieName, appName }) {
   </head>
   <body>
     <form class="card" method="post" action="/login">
-      <h1>${appName}</h1>
+      <h1>${safeAppName}</h1>
       <p>Public access is protected. Enter the access token from your local launcher.</p>
       ${safeMessage}
       <input type="password" name="token" placeholder="Access token" autofocus />

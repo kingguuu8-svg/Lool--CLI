@@ -21,17 +21,43 @@ function sanitizeRemoteCwd(inputCwd) {
     return "";
   }
 
-  return inputCwd.trim();
+  return inputCwd.trim().replace(/\0/g, "");
 }
 
-function bestEffortChangeDirectoryCommand(cwd) {
-  if (!cwd) {
-    return "";
+function escapePosixSingleQuoted(value) {
+  return String(value).replace(/'/g, `'\"'\"'`);
+}
+
+function escapePowerShellSingleQuoted(value) {
+  return String(value).replace(/'/g, "''");
+}
+
+function buildRemoteChangeDirectoryCommands(cwd) {
+  if (!cwd || /[\r\n]/.test(cwd)) {
+    return [];
   }
 
-  const escapedForCmd = cwd.replace(/"/g, '""');
-  const escapedForPosix = cwd.replace(/(["\\$`])/g, "\\$1");
-  return `cd /d "${escapedForCmd}" 2>nul || cd "${escapedForPosix}"`;
+  const posixPath = escapePosixSingleQuoted(cwd);
+  const powerShellPath = escapePowerShellSingleQuoted(cwd);
+
+  return [
+    `Set-Location -LiteralPath '${powerShellPath}'`,
+    `cd -- '${posixPath}'`,
+  ];
+}
+
+function buildStartupCommands(session) {
+  const commands = [];
+
+  if (session.mode === "ssh") {
+    commands.push(...buildRemoteChangeDirectoryCommands(session.cwd));
+  }
+
+  if (session.startupCommand) {
+    commands.push(session.startupCommand);
+  }
+
+  return commands;
 }
 
 function createSessionService({ defaultCwd, host, port, accessToken, projectRoot }) {
@@ -108,14 +134,7 @@ function createSessionService({ defaultCwd, host, port, accessToken, projectRoot
   }
 
   function maybeSendStartup(session) {
-    const commands = [];
-    if (session.cwd) {
-      commands.push(bestEffortChangeDirectoryCommand(session.cwd));
-    }
-    if (session.startupCommand) {
-      commands.push(session.startupCommand);
-    }
-
+    const commands = buildStartupCommands(session);
     if (!commands.length) {
       return;
     }
