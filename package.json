@@ -1,15 +1,8 @@
 {
   "name": "pocketcli",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "private": true,
   "description": "Self-hosted Android and desktop access for local coding agent CLIs.",
-  "homepage": "https://github.com/kingguuu8-svg/pocketcli-open-source#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kingguuu8-svg/pocketcli-open-source.git"
-  },
-  "bugs": {
-    "url": "https://github.com/kingguuu8-svg/pocketcli-open-source/issues"
-  },
   "main": "desktop/main.js",
   "license": "MIT",
   "keywords": [
@@ -27,14 +20,13 @@
     "start:lan": "set HOST=0.0.0.0&& node server/server.js",
     "build:apk": "cmd /c build-apk.bat",
     "build:android": "cmd /c build-apk.bat",
-    "capture:assets": "cmd /c capture-launch-assets.bat",
     "desktop": "cmd /c start-desktop.bat",
     "release:checksums": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/write-checksums.ps1 -ProjectRoot ."
   },
   "dependencies": {
-    "@xterm/addon-serialize": "^0.13.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-search": "^0.16.0",
+    "@xterm/addon-serialize": "^0.14.0",
     "@xterm/headless": "^6.0.0",
     "@xterm/xterm": "^5.5.0",
     "express": "^4.21.2",

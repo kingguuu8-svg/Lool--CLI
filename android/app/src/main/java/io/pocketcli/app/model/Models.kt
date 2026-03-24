@@ -1,5 +1,9 @@
 package io.pocketcli.app.model
 
+import java.net.URI
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 data class ServerConfig(
     val scheme: String = "http",
     val host: String = "10.0.2.2",
@@ -22,7 +26,51 @@ data class ServerConfig(
         return "${normalizedScheme()}://$safeHost$portSegment$pathSegment"
     }
 
-    fun terminalEntryUrl(): String = normalizedBaseUrl().trimEnd('/') + "/"
+    fun launcherUrl(): String = normalizedBaseUrl()
+
+    fun terminalEntryUrl(): String {
+        return normalizedBaseUrl().trimEnd('/') + "/"
+    }
+
+    fun mobileEntryUrl(): String {
+        return normalizedBaseUrl().trimEnd('/') + "/m"
+    }
+
+    fun mobileEntryUrlWithBootstrapToken(): String {
+        val baseUrl = mobileEntryUrl()
+        val safeToken = token.trim()
+        if (safeToken.isBlank()) {
+            return baseUrl
+        }
+        val encoded = URLEncoder.encode(safeToken, StandardCharsets.UTF_8.toString())
+        val separator = if (baseUrl.contains("?")) "&" else "?"
+        return "$baseUrl${separator}token=$encoded"
+    }
+
+    fun withLauncherUrl(rawInput: String): ServerConfig {
+        val trimmed = rawInput.trim()
+        if (trimmed.isBlank()) {
+            return this
+        }
+
+        val normalizedInput = if (trimmed.contains("://")) trimmed else "http://$trimmed"
+        val uri = URI(normalizedInput)
+        val parsedScheme = uri.scheme?.lowercase()?.takeIf { it == "http" || it == "https" } ?: "http"
+        val parsedHost = uri.host ?: ""
+        val parsedPort = when {
+            uri.port >= 0 -> uri.port.toString()
+            parsedScheme == "https" -> "443"
+            else -> "80"
+        }
+        val parsedPath = uri.path.orEmpty().trim().trim('/')
+
+        return copy(
+            scheme = parsedScheme,
+            host = parsedHost,
+            port = parsedPort,
+            basePath = parsedPath,
+        )
+    }
 }
 
 data class HealthResponse(
@@ -33,22 +81,16 @@ data class HealthResponse(
     val authEnabled: Boolean,
 )
 
-data class TerminalLoadRequest(
-    val url: String,
-    val cookieBaseUrl: String,
-    val token: String,
-)
-
 data class MainUiState(
     val serverConfig: ServerConfig = ServerConfig(),
+    val serverUrlInput: String = serverConfig.launcherUrl(),
     val statusMessage: String = "Ready.",
     val lastConnectionSummary: String = "",
     val isTestingConnection: Boolean = false,
     val isSettingsSheetVisible: Boolean = false,
     val requiresSetup: Boolean = false,
     val webUrl: String = "",
-    val pendingWebUrl: String = "",
-    val pendingLoadRequest: TerminalLoadRequest? = null,
+    val reloadTick: Long = 0L,
     val pageTitle: String = "",
     val isPageLoading: Boolean = false,
     val loadingProgress: Int = 0,

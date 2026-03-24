@@ -7,7 +7,6 @@ import io.pocketcli.app.data.PocketCliRepository
 import io.pocketcli.app.data.SettingsStore
 import io.pocketcli.app.model.MainUiState
 import io.pocketcli.app.model.ServerConfig
-import io.pocketcli.app.model.TerminalLoadRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +20,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(
         MainUiState(
             serverConfig = settingsStore.loadServerConfig(),
+            serverUrlInput = settingsStore.loadServerConfig().launcherUrl(),
             requiresSetup = !settingsStore.hasCompletedSetup(),
         ),
     )
@@ -54,34 +54,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun saveServerConfig() {
-        val config = _uiState.value.serverConfig
-        val validationError = validateConfig(config)
-        if (validationError != null) {
-            setStatus(validationError)
-            return
-        }
+    fun updateServerUrlInput(value: String) {
+        _uiState.update { it.copy(serverUrlInput = value) }
+    }
 
+    fun saveServerConfig() {
+        val config = parseConfigFromInputs() ?: return
         settingsStore.saveServerConfig(config)
         MainActivity.applyLanguage(config.languageTag)
+        val targetUrl = config.mobileEntryUrlWithBootstrapToken()
         _uiState.update {
             it.copy(
+                serverConfig = config,
+                serverUrlInput = config.launcherUrl(),
                 isSettingsSheetVisible = false,
                 requiresSetup = false,
                 statusMessage = "Configuration saved.",
-                pendingWebUrl = "",
-                pendingLoadRequest = buildLoadRequest(config),
+                webUrl = targetUrl,
+                reloadTick = it.reloadTick + 1,
             )
         }
     }
 
     fun testConnection() {
-        val config = _uiState.value.serverConfig
-        val validationError = validateConfig(config)
-        if (validationError != null) {
-            setStatus(validationError)
-            return
-        }
+        val config = parseConfigFromInputs() ?: return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isTestingConnection = true, statusMessage = "Testing connection...") }
@@ -90,6 +86,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }.onSuccess { health ->
                 _uiState.update {
                     it.copy(
+                        serverConfig = config,
+                        serverUrlInput = config.launcherUrl(),
                         isTestingConnection = false,
                         lastConnectionSummary = "${health.host}:${health.port}  ${health.cwd}",
                         statusMessage = "Connection successful.",
@@ -114,16 +112,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             return
         }
-        _uiState.update { it.copy(pendingWebUrl = current, statusMessage = "Reloading...") }
-    }
-
-    fun consumePendingLoadRequest(): TerminalLoadRequest? {
-        val pendingRequest = _uiState.value.pendingLoadRequest
-        if (pendingRequest == null) {
-            return null
-        }
-        _uiState.update { it.copy(pendingLoadRequest = null, pendingWebUrl = "") }
-        return pendingRequest
+        _uiState.update { it.copy(statusMessage = "Reloading...", reloadTick = it.reloadTick + 1) }
     }
 
     fun onPageStarted(url: String) {
@@ -169,27 +158,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun loadSavedTarget() {
-        val request = buildLoadRequest(_uiState.value.serverConfig)
+        val config = _uiState.value.serverConfig
+        val targetUrl = config.mobileEntryUrlWithBootstrapToken()
         _uiState.update {
             it.copy(
-                pendingWebUrl = request.url,
-                pendingLoadRequest = request,
+                serverUrlInput = config.launcherUrl(),
+                webUrl = targetUrl,
+                reloadTick = it.reloadTick + 1,
                 statusMessage = "Opening terminal...",
             )
         }
     }
 
-    private fun buildLoadRequest(config: ServerConfig): TerminalLoadRequest {
-        return TerminalLoadRequest(
-            url = config.terminalEntryUrl(),
-            cookieBaseUrl = config.normalizedBaseUrl(),
-            token = config.token.trim(),
-        )
+    private fun parseConfigFromInputs(): ServerConfig? {
+        val draft = runCatching {
+            _uiState.value.serverConfig.withLauncherUrl(_uiState.value.serverUrlInput)
+        }.getOrElse {
+            setStatus("Server URL is invalid.")
+            return null
+        }
+        val validationError = validateConfig(draft)
+        if (validationError != null) {
+            setStatus(validationError)
+            return null
+        }
+        return draft
     }
 
     private fun validateConfig(config: ServerConfig): String? {
         if (config.host.isBlank()) {
-            return "Host is required."
+            return "Server URL is required."
         }
         if (config.port.isBlank()) {
             return "Port is required."

@@ -3,9 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
-def appVersionCode = (project.findProperty("POCKETCLI_VERSION_CODE") ?: "1").toInteger()
-def appVersionName = String.valueOf(project.findProperty("POCKETCLI_VERSION_NAME") ?: "0.1.0")
-def apkBaseName = "PocketCLI-Mobile-v${appVersionName}"
+def appVersionCode = (project.findProperty("POCKETCLI_VERSION_CODE") ?: "2").toInteger()
+def appVersionName = String.valueOf(project.findProperty("POCKETCLI_VERSION_NAME") ?: "0.1.2")
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -75,12 +74,11 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-}
 
-android.applicationVariants.configureEach { variant ->
-    variant.outputs.configureEach { output ->
-        def suffix = variant.buildType.name
-        outputFileName = "${apkBaseName}-${suffix}.apk"
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
+            outputFileName = "PocketCLI-Mobile-v${variant.versionName}-${variant.buildType.name}.apk"
+        }
     }
 }
 

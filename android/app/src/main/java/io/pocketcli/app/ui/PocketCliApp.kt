@@ -1,6 +1,7 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package io.pocketcli.app.ui
 
-import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,16 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -29,46 +31,62 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import io.pocketcli.app.R
 import io.pocketcli.app.model.MainUiState
-import io.pocketcli.app.model.TerminalLoadRequest
-import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PocketCliApp(
     uiState: MainUiState,
     onOpenSettings: () -> Unit,
     onCloseSettings: () -> Unit,
+    onServerUrlChanged: (String) -> Unit,
     onServerConfigChanged: ((io.pocketcli.app.model.ServerConfig) -> io.pocketcli.app.model.ServerConfig) -> Unit,
     onSaveServerConfig: () -> Unit,
     onTestConnection: () -> Unit,
     onReloadPage: () -> Unit,
     onOpenExternal: (String) -> Unit,
-    onConsumePendingLoadRequest: () -> TerminalLoadRequest?,
+    onExitApp: () -> Unit,
     onPageStarted: (String) -> Unit,
     onPageProgressChanged: (Int) -> Unit,
     onPageFinished: (String, String?) -> Unit,
     onPageError: (String) -> Unit,
 ) {
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val webViewManager = remember {
+        PocketCliWebViewManager(
+            callbacks = PocketCliWebViewCallbacks(
+                onPageStarted = onPageStarted,
+                onPageProgressChanged = onPageProgressChanged,
+                onPageFinished = onPageFinished,
+                onPageError = onPageError,
+            ),
+        )
+    }
+
+    BackHandler(enabled = !uiState.requiresSetup && !uiState.isSettingsSheetVisible) {
+        scope.launch {
+            if (drawerState.isClosed) {
+                drawerState.open()
+            } else {
+                onExitApp()
+            }
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = !uiState.requiresSetup,
+        gesturesEnabled = false,
         drawerContent = {
             ModalDrawerSheet(
                 drawerContainerColor = MaterialTheme.colorScheme.surface,
@@ -85,7 +103,7 @@ fun PocketCliApp(
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Text(
-                        text = uiState.serverConfig.normalizedBaseUrl(),
+                        text = uiState.serverConfig.launcherUrl(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -103,6 +121,13 @@ fun PocketCliApp(
                     }
                     Divider()
                     DrawerAction(
+                        icon = Icons.Rounded.Close,
+                        label = stringResource(R.string.back_to_terminal),
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                        },
+                    )
+                    DrawerAction(
                         icon = Icons.Rounded.Refresh,
                         label = stringResource(R.string.reload),
                         onClick = {
@@ -115,7 +140,7 @@ fun PocketCliApp(
                         label = stringResource(R.string.open_in_browser),
                         onClick = {
                             scope.launch { drawerState.close() }
-                            val target = uiState.serverConfig.terminalEntryUrl()
+                            val target = uiState.webUrl.ifBlank { uiState.serverConfig.mobileEntryUrl() }
                             onOpenExternal(target)
                         },
                     )
@@ -127,72 +152,61 @@ fun PocketCliApp(
                             onOpenSettings()
                         },
                     )
+                    DrawerAction(
+                        icon = Icons.Rounded.ExitToApp,
+                        label = stringResource(R.string.exit_app),
+                        onClick = onExitApp,
+                    )
                 }
             }
         },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            TerminalWebView(
+            AndroidView(
                 modifier = Modifier.fillMaxSize(),
-                onCreated = { webViewRef.value = it },
-                onPageStarted = onPageStarted,
-                onPageProgressChanged = onPageProgressChanged,
-                onPageFinished = onPageFinished,
-                onPageError = onPageError,
+                factory = { context ->
+                    webViewManager.create(context)
+                },
+                update = {
+                    if (uiState.webUrl.isNotBlank()) {
+                        webViewManager.syncAndLoad(
+                            url = uiState.webUrl,
+                            cookieBaseUrl = uiState.serverConfig.normalizedBaseUrl(),
+                            token = uiState.serverConfig.token,
+                            reloadTick = uiState.reloadTick,
+                        )
+                    }
+                },
             )
 
             if (uiState.isPageLoading) {
                 LinearProgressIndicator(
                     progress = (uiState.loadingProgress.coerceIn(0, 100)) / 100f,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter),
                 )
             }
 
-            if (!uiState.requiresSetup) {
-                FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            if (drawerState.isClosed) {
-                                drawerState.open()
-                            } else {
-                                drawerState.close()
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(14.dp)
-                        .size(46.dp),
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Menu,
-                        contentDescription = stringResource(R.string.open_menu),
-                    )
-                }
-            }
-
-            if (!uiState.hasLoadedOnce && (uiState.isPageLoading || uiState.requiresSetup)) {
-                LoadingOverlay(requiresSetup = uiState.requiresSetup)
+            if (!uiState.hasLoadedOnce || uiState.requiresSetup) {
+                LoadingOverlay(
+                    requiresSetup = uiState.requiresSetup,
+                    isLoading = uiState.isPageLoading,
+                    statusMessage = uiState.statusMessage,
+                )
             }
         }
-    }
-
-    LaunchedEffect(uiState.pendingWebUrl) {
-        val request = onConsumePendingLoadRequest() ?: return@LaunchedEffect
-        val webView = webViewRef.value ?: return@LaunchedEffect
-        applyAuthCookie(request)
-        webView.loadUrl(request.url)
     }
 
     if (uiState.isSettingsSheetVisible) {
         SettingsSheet(
             config = uiState.serverConfig,
+            serverUrlInput = uiState.serverUrlInput,
             lastConnectionSummary = uiState.lastConnectionSummary,
             isTestingConnection = uiState.isTestingConnection,
             isInitialSetup = uiState.requiresSetup,
             onDismiss = onCloseSettings,
+            onServerUrlChanged = onServerUrlChanged,
             onConfigChanged = onServerConfigChanged,
             onSave = onSaveServerConfig,
             onTestConnection = onTestConnection,
@@ -231,7 +245,15 @@ private fun DrawerAction(
 }
 
 @Composable
-private fun LoadingOverlay(requiresSetup: Boolean) {
+private fun LoadingOverlay(
+    requiresSetup: Boolean,
+    isLoading: Boolean,
+    statusMessage: String,
+) {
+    if (!requiresSetup && !isLoading) {
+        return
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -270,7 +292,7 @@ private fun LoadingOverlay(requiresSetup: Boolean) {
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        text = stringResource(R.string.opening_terminal_hint),
+                        text = statusMessage,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
