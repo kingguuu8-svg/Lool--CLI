@@ -11,7 +11,7 @@ PocketCLI lets you keep your agent CLI running on your own machine and reach it 
 - an Android app
 - a VPS-backed public endpoint
 
-Claude Code works today. More local agent CLIs can fit the same workflow later.
+Claude Code and Codex CLI work today. More local agent CLIs can fit the same workflow later.
 
 Real screenshots are still being refreshed. For now, the README only keeps the real demo asset instead of placeholder illustrations. See [docs/screenshots.md](docs/screenshots.md) for the capture plan.
 
@@ -46,6 +46,15 @@ The script will:
 - create the reverse SSH tunnel
 - print the public URL and token
 
+### 2.1 Supported CLI presets
+
+The browser UI includes built-in startup presets for:
+
+- `Claude Code`
+- `Codex CLI`
+
+You can still leave the preset on `Custom startup` and run any other local CLI command manually.
+
 ### 3. Android install
 
 Build:
@@ -75,6 +84,7 @@ Outputs:
 - Multi-session terminal UI in the browser with `xterm.js`
 - Local sessions with `node-pty`
 - SSH sessions with `ssh2`
+- Built-in startup presets and quick actions for Claude Code and Codex CLI
 - Android shell app with saved address, token, language, and first-run setup
 - Windows desktop launcher for local, LAN, and VPS modes
 - Token-protected public mode

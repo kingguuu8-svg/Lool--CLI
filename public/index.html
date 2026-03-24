@@ -12,15 +12,20 @@
       <aside class="sidebar">
         <div class="panel">
           <h1>PocketCLI</h1>
-          <p class="hint">Self-hosted browser access for local agent CLIs. Claude Code works today.</p>
+          <p class="hint">Self-hosted browser access for local agent CLIs. Claude Code and Codex CLI work today.</p>
           <form id="create-session-form" class="stack">
+            <select id="agent-preset">
+              <option value="">Custom startup</option>
+              <option value="claude">Claude Code</option>
+              <option value="codex">Codex CLI</option>
+            </select>
             <select id="session-mode">
               <option value="local">Local session</option>
               <option value="ssh">SSH session</option>
             </select>
             <input id="session-name" type="text" placeholder="session name" />
             <input id="session-cwd" type="text" placeholder="working dir / initial dir (optional)" />
-            <input id="startup-command" type="text" placeholder="startup command (optional, e.g. claude)" />
+            <input id="startup-command" type="text" placeholder="startup command (optional, e.g. claude or codex)" />
 
             <div id="ssh-fields" class="stack hidden">
               <input id="ssh-host" type="text" placeholder="ssh host" />
@@ -50,8 +55,9 @@
 
         <div class="panel">
           <h2>Quick Actions</h2>
-          <div class="stack">
+          <div class="stack quick-actions">
             <button id="run-claude" type="button">Run claude</button>
+            <button id="run-codex" type="button">Run codex</button>
             <button id="send-clear" type="button">Clear screen</button>
             <button id="kill-session" type="button" class="danger">Kill session</button>
           </div>

@@ -1,6 +1,7 @@
 const terminalHost = document.getElementById("terminal");
 const sessionList = document.getElementById("session-list");
 const createForm = document.getElementById("create-session-form");
+const agentPresetInput = document.getElementById("agent-preset");
 const sessionModeInput = document.getElementById("session-mode");
 const sessionNameInput = document.getElementById("session-name");
 const sessionCwdInput = document.getElementById("session-cwd");
@@ -17,8 +18,20 @@ const activeSessionTitle = document.getElementById("active-session-title");
 const statusText = document.getElementById("status-text");
 const refreshButton = document.getElementById("refresh-sessions");
 const runClaudeButton = document.getElementById("run-claude");
+const runCodexButton = document.getElementById("run-codex");
 const clearButton = document.getElementById("send-clear");
 const killButton = document.getElementById("kill-session");
+
+const AGENT_PRESETS = {
+  claude: {
+    startupCommand: "claude",
+    suggestedName: "claude",
+  },
+  codex: {
+    startupCommand: "codex",
+    suggestedName: "codex",
+  },
+};
 
 const term = new Terminal({
   cursorBlink: true,
@@ -146,6 +159,35 @@ function buildCreatePayload() {
   return payload;
 }
 
+function applyPresetSelection() {
+  const preset = AGENT_PRESETS[agentPresetInput.value];
+  if (!preset) {
+    return;
+  }
+
+  if (!startupCommandInput.value.trim()) {
+    startupCommandInput.value = preset.startupCommand;
+  }
+
+  if (!sessionNameInput.value.trim()) {
+    sessionNameInput.value = preset.suggestedName;
+  }
+}
+
+async function sendCommandToCurrentSession(command) {
+  if (!currentSessionId) {
+    setStatus("Create or select a session first.");
+    return false;
+  }
+
+  await api(`/api/sessions/${currentSessionId}/command`, {
+    method: "POST",
+    body: JSON.stringify({ command }),
+  });
+  setStatus(`Sent: ${command}`);
+  return true;
+}
+
 async function connectSession(sessionId) {
   if (!sessionId) {
     return;
@@ -228,16 +270,20 @@ window.addEventListener("resize", () => {
 
 createForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  applyPresetSelection();
   const session = await api("/api/sessions", {
     method: "POST",
     body: JSON.stringify(buildCreatePayload()),
   });
+  const selectedPreset = agentPresetInput.value;
+  const presetName = selectedPreset || session.mode;
+  agentPresetInput.value = "";
   sessionNameInput.value = "";
   sessionCwdInput.value = "";
   startupCommandInput.value = "";
   sshPasswordInput.value = "";
   sshPassphraseInput.value = "";
-  setStatus(`Created ${session.mode} session ${session.name}.`);
+  setStatus(`Created ${presetName} session ${session.name}.`);
   await loadSessions(session.id);
 });
 
@@ -246,29 +292,17 @@ refreshButton.addEventListener("click", () => {
 });
 
 runClaudeButton.addEventListener("click", async () => {
-  if (!currentSessionId) {
-    setStatus("Create or select a session first.");
-    return;
-  }
-  await api(`/api/sessions/${currentSessionId}/command`, {
-    method: "POST",
-    body: JSON.stringify({ command: "claude" }),
-  });
-  setStatus("Sent: claude");
+  await sendCommandToCurrentSession("claude");
+});
+
+runCodexButton.addEventListener("click", async () => {
+  await sendCommandToCurrentSession("codex");
 });
 
 clearButton.addEventListener("click", async () => {
-  if (!currentSessionId) {
-    setStatus("Create or select a session first.");
-    return;
-  }
   const session = sessionCache.find((item) => item.id === currentSessionId);
   const clearCommand = session?.shell === "cmd.exe" ? "cls" : "clear";
-  await api(`/api/sessions/${currentSessionId}/command`, {
-    method: "POST",
-    body: JSON.stringify({ command: clearCommand }),
-  });
-  setStatus(`Sent: ${clearCommand}`);
+  await sendCommandToCurrentSession(clearCommand);
 });
 
 killButton.addEventListener("click", async () => {
@@ -288,6 +322,7 @@ killButton.addEventListener("click", async () => {
 
 sessionModeInput.addEventListener("change", updateSshFieldVisibility);
 sshAuthTypeInput.addEventListener("change", updateSshFieldVisibility);
+agentPresetInput.addEventListener("change", applyPresetSelection);
 updateSshFieldVisibility();
 
 loadSessions().catch((error) => setStatus(error.message));
