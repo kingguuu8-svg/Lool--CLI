@@ -38,6 +38,10 @@ class PocketCliRepository {
         }
     }
 
+    fun buildBrowserUrl(config: ServerConfig): String {
+        return config.terminalEntryUrl()
+    }
+
     private fun createClient(config: ServerConfig): OkHttpClient {
         val builder = OkHttpClient.Builder()
             .connectTimeout(config.connectTimeoutSeconds.toLongOrNull() ?: 8L, TimeUnit.SECONDS)

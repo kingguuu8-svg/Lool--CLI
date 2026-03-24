@@ -45,8 +45,16 @@ if exist "%ANDROID_DIR%\app\build\outputs\apk\debug\app-debug.apk" (
   copy /y "%ANDROID_DIR%\app\build\outputs\apk\debug\app-debug.apk" "%DIST_DIR%\app-debug.apk" >nul
 )
 
+for %%F in ("%ANDROID_DIR%\app\build\outputs\apk\debug\PocketCLI-Mobile-v*-debug.apk") do (
+  if exist "%%~fF" copy /y "%%~fF" "%DIST_DIR%\%%~nxF" >nul
+)
+
 if exist "%ANDROID_DIR%\app\build\outputs\apk\release\app-release.apk" (
   copy /y "%ANDROID_DIR%\app\build\outputs\apk\release\app-release.apk" "%DIST_DIR%\app-release.apk" >nul
+)
+
+for %%F in ("%ANDROID_DIR%\app\build\outputs\apk\release\PocketCLI-Mobile-v*-release.apk") do (
+  if exist "%%~fF" copy /y "%%~fF" "%DIST_DIR%\%%~nxF" >nul
 )
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\write-checksums.ps1" -ProjectRoot "%ROOT_DIR%" >nul
@@ -54,9 +62,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT_DIR%\scripts\write-ch
 echo.
 echo APK outputs:
 if exist "%DIST_DIR%\app-debug.apk" echo   %DIST_DIR%\app-debug.apk
+for %%F in ("%DIST_DIR%\PocketCLI-Mobile-v*-debug.apk") do if exist "%%~fF" echo   %%~fF
 if exist "%DIST_DIR%\app-release.apk" (
   echo   %DIST_DIR%\app-release.apk
 ) else (
   echo   Release APK skipped. Add android\keystore.properties to enable signed release builds.
 )
+for %%F in ("%DIST_DIR%\PocketCLI-Mobile-v*-release.apk") do if exist "%%~fF" echo   %%~fF
 if exist "%ROOT_DIR%\dist\checksums.txt" echo   %ROOT_DIR%\dist\checksums.txt

@@ -7,6 +7,7 @@ import io.pocketcli.app.data.PocketCliRepository
 import io.pocketcli.app.data.SettingsStore
 import io.pocketcli.app.model.MainUiState
 import io.pocketcli.app.model.ServerConfig
+import io.pocketcli.app.model.TerminalLoadRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,13 +64,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         settingsStore.saveServerConfig(config)
         MainActivity.applyLanguage(config.languageTag)
-        val targetUrl = config.terminalEntryUrl()
         _uiState.update {
             it.copy(
                 isSettingsSheetVisible = false,
                 requiresSetup = false,
                 statusMessage = "Configuration saved.",
-                pendingWebUrl = targetUrl,
+                pendingWebUrl = "",
+                pendingLoadRequest = buildLoadRequest(config),
             )
         }
     }
@@ -116,13 +117,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(pendingWebUrl = current, statusMessage = "Reloading...") }
     }
 
-    fun consumePendingWebUrl(): String? {
-        val pending = _uiState.value.pendingWebUrl
-        if (pending.isBlank()) {
+    fun consumePendingLoadRequest(): TerminalLoadRequest? {
+        val pendingRequest = _uiState.value.pendingLoadRequest
+        if (pendingRequest == null) {
             return null
         }
-        _uiState.update { it.copy(pendingWebUrl = "") }
-        return pending
+        _uiState.update { it.copy(pendingLoadRequest = null, pendingWebUrl = "") }
+        return pendingRequest
     }
 
     fun onPageStarted(url: String) {
@@ -168,13 +169,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun loadSavedTarget() {
-        val targetUrl = _uiState.value.serverConfig.terminalEntryUrl()
+        val request = buildLoadRequest(_uiState.value.serverConfig)
         _uiState.update {
             it.copy(
-                pendingWebUrl = targetUrl,
+                pendingWebUrl = request.url,
+                pendingLoadRequest = request,
                 statusMessage = "Opening terminal...",
             )
         }
+    }
+
+    private fun buildLoadRequest(config: ServerConfig): TerminalLoadRequest {
+        return TerminalLoadRequest(
+            url = config.terminalEntryUrl(),
+            cookieBaseUrl = config.normalizedBaseUrl(),
+            token = config.token.trim(),
+        )
     }
 
     private fun validateConfig(config: ServerConfig): String? {

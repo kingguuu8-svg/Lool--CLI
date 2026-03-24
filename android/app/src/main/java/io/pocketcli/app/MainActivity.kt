@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                     onOpenExternal = { targetUrl ->
                         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl)))
                     },
-                    onConsumePendingWebUrl = viewModel::consumePendingWebUrl,
+                    onConsumePendingLoadRequest = viewModel::consumePendingLoadRequest,
                     onPageStarted = viewModel::onPageStarted,
                     onPageProgressChanged = viewModel::onPageProgressChanged,
                     onPageFinished = viewModel::onPageFinished,

@@ -2,8 +2,6 @@
 
 Self-hosted Android and desktop access for local coding agent CLIs.
 
-![PocketCLI hero](docs/assets/pocketcli-hero.svg)
-
 ![PocketCLI demo](docs/assets/pocketcli-demo.gif)
 
 PocketCLI lets you keep your agent CLI running on your own machine and reach it from:
@@ -15,14 +13,7 @@ PocketCLI lets you keep your agent CLI running on your own machine and reach it 
 
 Claude Code works today. More local agent CLIs can fit the same workflow later.
 
-## Preview
-
-![Android terminal](docs/assets/android-terminal.svg)
-![Android settings](docs/assets/android-settings.svg)
-![Desktop launcher](docs/assets/desktop-launcher.svg)
-![VPS access flow](docs/assets/vps-flow.svg)
-
-More launch assets and refreshed screenshots are tracked in [docs/screenshots.md](docs/screenshots.md).
+Real screenshots are still being refreshed. For now, the README only keeps the real demo asset instead of placeholder illustrations. See [docs/screenshots.md](docs/screenshots.md) for the capture plan.
 
 ## Quick Start
 

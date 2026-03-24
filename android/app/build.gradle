@@ -5,6 +5,7 @@ plugins {
 
 def appVersionCode = (project.findProperty("POCKETCLI_VERSION_CODE") ?: "1").toInteger()
 def appVersionName = String.valueOf(project.findProperty("POCKETCLI_VERSION_NAME") ?: "0.1.0")
+def apkBaseName = "PocketCLI-Mobile-v${appVersionName}"
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -76,12 +77,20 @@ android {
     }
 }
 
+android.applicationVariants.configureEach { variant ->
+    variant.outputs.configureEach { output ->
+        def suffix = variant.buildType.name
+        outputFileName = "${apkBaseName}-${suffix}.apk"
+    }
+}
+
 dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.7.0'
     implementation 'androidx.activity:activity-compose:1.8.2'
     implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     implementation 'androidx.datastore:datastore-preferences:1.0.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PocketCLI</string>
+    <string name="app_name">PocketCLI Mobile</string>
     <string name="settings">Settings</string>
     <string name="settings_subtitle_webview">Manage the saved server address, token, timeout, and language for PocketCLI.</string>
     <string name="settings_subtitle_initial_setup">Complete the connection settings first. PocketCLI will open the terminal after saving a working target.</string>

@@ -1,12 +1,15 @@
 package io.pocketcli.app.data
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import io.pocketcli.app.MainActivity
 import io.pocketcli.app.model.ServerConfig
 
 class SettingsStore(context: Context) {
-    private val preferences =
-        context.getSharedPreferences(MainActivity.PREFERENCES_NAME, Context.MODE_PRIVATE)
+    private val preferences = createPreferences(context)
 
     fun loadServerConfig(): ServerConfig {
         return ServerConfig(
@@ -45,6 +48,7 @@ class SettingsStore(context: Context) {
     }
 
     companion object {
+        private const val ENCRYPTED_PREFERENCES_NAME = "pocketcli-native-encrypted"
         private const val KEY_SCHEME = "scheme"
         private const val KEY_HOST = "host"
         private const val KEY_PORT = "port"
@@ -54,5 +58,25 @@ class SettingsStore(context: Context) {
         private const val KEY_READ_TIMEOUT = "read_timeout"
         private const val KEY_IGNORE_TLS_ERRORS = "ignore_tls_errors"
         private const val KEY_HAS_COMPLETED_SETUP = "has_completed_setup"
+        private const val LOG_TAG = "PocketCliSettings"
+
+        private fun createPreferences(context: Context): SharedPreferences {
+            return runCatching {
+                val masterKey = MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+
+                EncryptedSharedPreferences.create(
+                    context,
+                    ENCRYPTED_PREFERENCES_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+                )
+            }.getOrElse { error ->
+                Log.w(LOG_TAG, "Falling back to plain SharedPreferences", error)
+                context.getSharedPreferences(MainActivity.PREFERENCES_NAME, Context.MODE_PRIVATE)
+            }
+        }
     }
 }

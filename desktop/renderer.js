@@ -44,7 +44,13 @@ async function launch(mode) {
     if (mode === "stop") {
       frame.src = "about:blank";
     }
-    setStatus(`${mode} finished.`);
+    if (result.health) {
+      setStatus(
+        `${mode} finished. ${result.health.host}:${result.health.port} ready.`,
+      );
+    } else {
+      setStatus(`${mode} finished.`);
+    }
   } catch (error) {
     setStatus(error.message || String(error), true);
     appendLog(`${error.stack || error.message || error}\n`);

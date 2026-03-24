@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PocketCLI</string>
+    <string name="app_name">PocketCLI Mobile</string>
     <string name="settings">设置</string>
     <string name="settings_subtitle_webview">管理 PocketCLI 保存的服务器地址、令牌、超时和语言。</string>
     <string name="settings_subtitle_initial_setup">请先完成连接设置。保存可用目标后，PocketCLI 会自动打开终端。</string>

@@ -1,15 +1,6 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-
 package io.pocketcli.app.ui
 
-import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,14 +38,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import io.pocketcli.app.R
 import io.pocketcli.app.model.MainUiState
-import kotlinx.coroutines.launch
+import io.pocketcli.app.model.TerminalLoadRequest
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PocketCliApp(
     uiState: MainUiState,
@@ -64,7 +56,7 @@ fun PocketCliApp(
     onTestConnection: () -> Unit,
     onReloadPage: () -> Unit,
     onOpenExternal: (String) -> Unit,
-    onConsumePendingWebUrl: () -> String?,
+    onConsumePendingLoadRequest: () -> TerminalLoadRequest?,
     onPageStarted: (String) -> Unit,
     onPageProgressChanged: (Int) -> Unit,
     onPageFinished: (String, String?) -> Unit,
@@ -123,7 +115,7 @@ fun PocketCliApp(
                         label = stringResource(R.string.open_in_browser),
                         onClick = {
                             scope.launch { drawerState.close() }
-                            val target = uiState.webUrl.ifBlank { uiState.serverConfig.terminalEntryUrl() }
+                            val target = uiState.serverConfig.terminalEntryUrl()
                             onOpenExternal(target)
                         },
                     )
@@ -188,8 +180,10 @@ fun PocketCliApp(
     }
 
     LaunchedEffect(uiState.pendingWebUrl) {
-        val target = onConsumePendingWebUrl() ?: return@LaunchedEffect
-        webViewRef.value?.loadUrl(target)
+        val request = onConsumePendingLoadRequest() ?: return@LaunchedEffect
+        val webView = webViewRef.value ?: return@LaunchedEffect
+        applyAuthCookie(request)
+        webView.loadUrl(request.url)
     }
 
     if (uiState.isSettingsSheetVisible) {
@@ -284,63 +278,4 @@ private fun LoadingOverlay(requiresSetup: Boolean) {
             }
         }
     }
-}
-
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-private fun TerminalWebView(
-    modifier: Modifier = Modifier,
-    onCreated: (WebView) -> Unit,
-    onPageStarted: (String) -> Unit,
-    onPageProgressChanged: (Int) -> Unit,
-    onPageFinished: (String, String?) -> Unit,
-    onPageError: (String) -> Unit,
-) {
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            WebView(context).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.allowFileAccess = false
-                settings.allowContentAccess = false
-                settings.cacheMode = WebSettings.LOAD_DEFAULT
-                settings.loadsImagesAutomatically = true
-                settings.useWideViewPort = true
-                settings.loadWithOverviewMode = true
-                isVerticalScrollBarEnabled = false
-                isHorizontalScrollBarEnabled = false
-
-                webViewClient = object : WebViewClient() {
-                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                        if (!url.isNullOrBlank()) {
-                            onPageStarted(url)
-                        }
-                    }
-
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        onPageFinished(url.orEmpty(), view?.title)
-                    }
-
-                    override fun onReceivedError(
-                        view: WebView?,
-                        request: WebResourceRequest?,
-                        error: WebResourceError?,
-                    ) {
-                        if (request?.isForMainFrame == true) {
-                            onPageError(error?.description?.toString() ?: "Failed to load terminal page.")
-                        }
-                    }
-                }
-
-                webChromeClient = object : WebChromeClient() {
-                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                        onPageProgressChanged(newProgress)
-                    }
-                }
-
-                onCreated(this)
-            }
-        },
-    )
 }

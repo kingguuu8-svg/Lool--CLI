@@ -98,7 +98,7 @@ async function waitForLocalHealth(timeoutMs = 20000) {
     try {
       const response = await fetch(HEALTH_FILE_URL);
       if (response.ok) {
-        return true;
+        return await response.json();
       }
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -133,13 +133,15 @@ ipcMain.handle("launch-mode", async (_event, mode) => {
   }
 
   const output = await runBat(scriptName);
+  let health = null;
   if (mode !== "stop") {
-    await waitForLocalHealth().catch(() => {});
+    health = await waitForLocalHealth();
   }
 
   return {
     ok: true,
     output,
+    health,
     vpsInfo: await readVpsAccess(),
   };
 });

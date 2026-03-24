@@ -22,13 +22,7 @@ data class ServerConfig(
         return "${normalizedScheme()}://$safeHost$portSegment$pathSegment"
     }
 
-    fun terminalEntryUrl(): String {
-        val root = normalizedBaseUrl().trimEnd('/') + "/"
-        if (token.isBlank()) {
-            return root
-        }
-        return root + "?token=" + android.net.Uri.encode(token.trim())
-    }
+    fun terminalEntryUrl(): String = normalizedBaseUrl().trimEnd('/') + "/"
 }
 
 data class HealthResponse(
@@ -37,6 +31,12 @@ data class HealthResponse(
     val port: Int,
     val cwd: String,
     val authEnabled: Boolean,
+)
+
+data class TerminalLoadRequest(
+    val url: String,
+    val cookieBaseUrl: String,
+    val token: String,
 )
 
 data class MainUiState(
@@ -48,6 +48,7 @@ data class MainUiState(
     val requiresSetup: Boolean = false,
     val webUrl: String = "",
     val pendingWebUrl: String = "",
+    val pendingLoadRequest: TerminalLoadRequest? = null,
     val pageTitle: String = "",
     val isPageLoading: Boolean = false,
     val loadingProgress: Int = 0,
