@@ -1,10 +1,12 @@
-# PocketCLI
+# Lool--CLI
 
 Self-hosted Android and desktop access for local coding agent CLIs.
 
-![PocketCLI demo](docs/assets/pocketcli-demo.gif)
+Small note: `PocketCLI` was the original project name. It is unrelated to any other project using that name, and this codebase was developed independently.
 
-PocketCLI lets you keep your agent CLI running on your own machine and reach it from:
+![Lool--CLI demo](docs/assets/pocketcli-demo.gif)
+
+Lool--CLI lets you keep your agent CLI running on your own machine and reach it from:
 
 - a local browser
 - a Windows desktop launcher
@@ -71,7 +73,7 @@ Outputs:
 - `dist/android/app-release.apk` when `android/keystore.properties` exists
 - `dist/checksums.txt`
 
-## Why PocketCLI
+## Why Lool--CLI
 
 - Keep your own machine as the execution host
 - Reach local sessions from phone or desktop
