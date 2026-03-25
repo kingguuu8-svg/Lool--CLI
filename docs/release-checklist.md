@@ -13,6 +13,8 @@
 - [ ] `build-apk.bat` completes
 - [ ] `dist/android/app-debug.apk` exists
 - [ ] release build exists when signing is configured
+- [ ] `build-launcher.bat` completes
+- [ ] `dist/launcher/LoolCLI-Launcher-win-x64.exe` exists
 - [ ] `scripts/write-checksums.ps1` generates `dist/checksums.txt`
 
 ## Docs and assets
@@ -29,7 +31,7 @@
 - [ ] repository name uses PocketCLI branding
 - [ ] repo description matches the README headline
 - [ ] topics include `android`, `self-hosted`, `terminal`, `remote-access`, `developer-tools`, `ai-agents`, `claude-code`
-- [ ] first release attaches APK and checksums
+- [ ] first release attaches APK, launcher EXE, and checksums
 
 ## Launch copy
 

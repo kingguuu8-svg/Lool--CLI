@@ -20,6 +20,7 @@
     "start:lan": "set HOST=0.0.0.0&& node server/server.js",
     "build:apk": "cmd /c build-apk.bat",
     "build:android": "cmd /c build-apk.bat",
+    "build:launcher": "cmd /c build-launcher.bat",
     "desktop": "cmd /c start-desktop.bat",
     "release:checksums": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/write-checksums.ps1 -ProjectRoot ."
   },

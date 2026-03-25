@@ -19,6 +19,14 @@ Real screenshots are still being refreshed. For now, the README only keeps the r
 
 ## Quick Start
 
+### 0. Windows one-click launcher
+
+Download `LoolCLI-Launcher-win-x64.exe` from the latest release and run it on Windows.
+
+- If you place it inside the project folder, it auto-detects the repository root on first launch.
+- Otherwise, it asks you to pick the project root once and remembers it.
+- After that, it gives you one-click buttons for Local, LAN, VPS, Desktop, and Stop Server.
+
 ### 1. Local mode
 
 ```bat
@@ -72,6 +80,13 @@ Outputs:
 - `dist/android/app-debug.apk`
 - `dist/android/app-release.apk` when `android/keystore.properties` exists
 - `dist/checksums.txt`
+- `dist/launcher/LoolCLI-Launcher-win-x64.exe`
+
+Build the Windows launcher:
+
+```bat
+build-launcher.bat
+```
 
 ## Why Lool--CLI
 
@@ -166,10 +181,11 @@ start-desktop.bat
 ## Build and Release
 
 - APK build: [build-apk.bat](build-apk.bat)
+- Windows launcher build: [build-launcher.bat](build-launcher.bat)
 - Release signing template: [android/keystore.properties.example](android/keystore.properties.example)
 - SHA256 output helper: [scripts/write-checksums.ps1](scripts/write-checksums.ps1)
 - Release checklist: [docs/release-checklist.md](docs/release-checklist.md)
-- Release notes template: [docs/release-notes-v0.1.0.md](docs/release-notes-v0.1.0.md)
+- Release notes: [docs/release-notes-v0.1.2.md](docs/release-notes-v0.1.2.md)
 
 ## Roadmap
 
