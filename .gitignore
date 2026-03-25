@@ -1,5 +1,7 @@
 .runtime/
 .secrets/
+.dotnet/
+.nuget/
 node_modules/
 dist/
 backups/
