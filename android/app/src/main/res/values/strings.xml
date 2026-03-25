@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">PocketCLI Mobile</string>
+    <string name="app_name">Lool--CLI Mobile</string>
     <string name="settings">Settings</string>
-    <string name="settings_subtitle_webview">Save a PocketCLI server URL and token, then reopen the immersive mobile terminal anytime.</string>
-    <string name="settings_subtitle_initial_setup">Enter a reachable PocketCLI URL first. The app will open the mobile terminal after saving.</string>
+    <string name="settings_subtitle_webview">Save a Lool--CLI server URL and token, then reopen the immersive mobile terminal anytime.</string>
+    <string name="settings_subtitle_initial_setup">Enter a reachable Lool--CLI URL first. The app will open the mobile terminal after saving.</string>
     <string name="server_url">Server URL</string>
     <string name="access_token_optional">Access token (optional)</string>
     <string name="test_connection">Test Connection</string>
