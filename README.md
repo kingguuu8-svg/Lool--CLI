@@ -17,6 +17,37 @@ Lool--CLI lets you keep your agent CLI running on your own machine and reach it 
 
 Claude Code and Codex CLI work today. More local agent CLIs can fit the same workflow later.
 
+## Preview
+
+The gallery below uses real emulator captures and the current local terminal UI.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/android-terminal-real.jpg" alt="Android terminal" />
+      <br />
+      <sub>Android terminal</sub>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/assets/android-settings-real.png" alt="Android settings" />
+      <br />
+      <sub>Android settings</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/android-menu-real.jpg" alt="Android menu" />
+      <br />
+      <sub>Android menu</sub>
+    </td>
+    <td width="50%" valign="top">
+      <strong>Capture notes</strong>
+      <p>The screenshots here are taken from the emulator and the local browser UI, not placeholder mockups.</p>
+      <p>See <a href="docs/screenshots.md">docs/screenshots.md</a> for the current capture notes.</p>
+    </td>
+  </tr>
+</table>
+
 ## Quick Start
 
 ### 0. Windows one-click launcher
