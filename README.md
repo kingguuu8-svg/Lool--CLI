@@ -4,6 +4,8 @@ Self-hosted Android and desktop access for local coding agent CLIs.
 
 Small note: `PocketCLI` was the original project name. It is unrelated to any other project using that name, and this codebase was developed independently.
 
+![Lool--CLI hero](docs/assets/pocketcli-hero.svg)
+
 ![Lool--CLI demo](docs/assets/pocketcli-demo.gif)
 
 Lool--CLI lets you keep your agent CLI running on your own machine and reach it from:
@@ -15,9 +17,15 @@ Lool--CLI lets you keep your agent CLI running on your own machine and reach it 
 
 Claude Code and Codex CLI work today. More local agent CLIs can fit the same workflow later.
 
-Real screenshots are still being refreshed. For now, the README only keeps the real demo asset instead of placeholder illustrations. See [docs/screenshots.md](docs/screenshots.md) for the capture plan.
-
 ## Quick Start
+
+### 0. Windows one-click launcher
+
+Download `LoolCLI-Launcher-win-x64.exe` from the latest release and run it on Windows.
+
+- If you place it inside the project folder, it auto-detects the repository root on first launch.
+- Otherwise, it asks you to pick the project root once and remembers it.
+- After that, it gives you one-click buttons for Local, LAN, VPS, Desktop, and Stop Server.
 
 ### 1. Local mode
 
@@ -72,6 +80,44 @@ Outputs:
 - `dist/android/app-debug.apk`
 - `dist/android/app-release.apk` when `android/keystore.properties` exists
 - `dist/checksums.txt`
+- `dist/launcher/LoolCLI-Launcher-win-x64.exe`
+
+Build the Windows launcher:
+
+```bat
+build-launcher.bat
+```
+
+## Preview
+
+The gallery below uses real emulator captures and the current local terminal UI.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/android-terminal-real.jpg" alt="Android terminal" />
+      <br />
+      <sub>Android terminal</sub>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/assets/android-settings-real.png" alt="Android settings" />
+      <br />
+      <sub>Android settings</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/android-menu-real.jpg" alt="Android menu" />
+      <br />
+      <sub>Android menu</sub>
+    </td>
+    <td width="50%" valign="top">
+      <strong>Capture notes</strong>
+      <p>The screenshots here are taken from the emulator and the local browser UI, not placeholder mockups.</p>
+      <p>See <a href="docs/screenshots.md">docs/screenshots.md</a> for the current capture notes.</p>
+    </td>
+  </tr>
+</table>
 
 ## Why Lool--CLI
 
@@ -166,10 +212,11 @@ start-desktop.bat
 ## Build and Release
 
 - APK build: [build-apk.bat](build-apk.bat)
+- Windows launcher build: [build-launcher.bat](build-launcher.bat)
 - Release signing template: [android/keystore.properties.example](android/keystore.properties.example)
 - SHA256 output helper: [scripts/write-checksums.ps1](scripts/write-checksums.ps1)
 - Release checklist: [docs/release-checklist.md](docs/release-checklist.md)
-- Release notes template: [docs/release-notes-v0.1.0.md](docs/release-notes-v0.1.0.md)
+- Release notes: [docs/release-notes-v0.1.2.md](docs/release-notes-v0.1.2.md)
 
 ## Roadmap
 

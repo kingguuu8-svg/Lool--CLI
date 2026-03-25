@@ -5,29 +5,17 @@ Current launch assets live in [docs/assets](assets).
 Current demo motion asset:
 
 - `docs/assets/pocketcli-demo.gif`
-- `docs/assets/browser-terminal.png`
-- `docs/assets/desktop-launcher.png`
 
-Current capture command:
+Current real captures used in the README:
 
-```bat
-capture-launch-assets.bat
-```
-
-Placeholder illustrations were removed from the README. Only keep real captures here.
-
-For the public launch, the target asset set is:
-
-1. Android terminal view
-2. Android settings view
-3. Desktop launcher
-4. VPS public-access flow
-5. short demo GIF or video for the README header
+1. Android terminal view: `docs/assets/android-terminal-real.jpg`
+2. Android settings view: `docs/assets/android-settings-real.png`
+3. Android menu view: `docs/assets/android-menu-real.jpg`
 
 Recommended refresh workflow:
 
-1. Run `capture-launch-assets.bat` to refresh the browser and desktop screenshots
-2. Capture Android views from a device or emulator when available
-3. Export final PNG assets into `docs/assets`
-
-If a true Android screenshot is not available yet, leave it out of the README instead of using a mock illustration.
+1. Start the local UI with `start-local-app.bat`
+2. Capture the browser terminal with a clean demo session
+3. Capture Android views from the emulator after a clean first-run setup
+4. Export final JPG, PNG, or GIF assets into `docs/assets`
+5. Update the README gallery so the first screen shows real captures only
