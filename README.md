@@ -4,10 +4,6 @@ Self-hosted Android and desktop access for local coding agent CLIs.
 
 Small note: `PocketCLI` was the original project name. It is unrelated to any other project using that name, and this codebase was developed independently.
 
-![Lool--CLI hero](docs/assets/pocketcli-hero.svg)
-
-![Lool--CLI demo](docs/assets/pocketcli-demo.gif)
-
 Lool--CLI lets you keep your agent CLI running on your own machine and reach it from:
 
 - a local browser
@@ -23,27 +19,20 @@ The gallery below uses real emulator captures and the current local terminal UI.
 
 <table>
   <tr>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
       <img src="docs/assets/android-terminal-real.jpg" alt="Android terminal" />
       <br />
       <sub>Android terminal</sub>
     </td>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
       <img src="docs/assets/android-settings-real.png" alt="Android settings" />
       <br />
       <sub>Android settings</sub>
     </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
       <img src="docs/assets/android-menu-real.jpg" alt="Android menu" />
       <br />
       <sub>Android menu</sub>
-    </td>
-    <td width="50%" valign="top">
-      <strong>Capture notes</strong>
-      <p>The screenshots here are taken from the emulator and the local browser UI, not placeholder mockups.</p>
-      <p>See <a href="docs/screenshots.md">docs/screenshots.md</a> for the current capture notes.</p>
     </td>
   </tr>
 </table>
@@ -118,37 +107,6 @@ Build the Windows launcher:
 ```bat
 build-launcher.bat
 ```
-
-## Preview
-
-The gallery below uses real emulator captures and the current local terminal UI.
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/assets/android-terminal-real.jpg" alt="Android terminal" />
-      <br />
-      <sub>Android terminal</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/assets/android-settings-real.png" alt="Android settings" />
-      <br />
-      <sub>Android settings</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/assets/android-menu-real.jpg" alt="Android menu" />
-      <br />
-      <sub>Android menu</sub>
-    </td>
-    <td width="50%" valign="top">
-      <strong>Capture notes</strong>
-      <p>The screenshots here are taken from the emulator and the local browser UI, not placeholder mockups.</p>
-      <p>See <a href="docs/screenshots.md">docs/screenshots.md</a> for the current capture notes.</p>
-    </td>
-  </tr>
-</table>
 
 ## Why Lool--CLI
 
